@@ -20,7 +20,7 @@ export interface Supplier {
 export const mockSuppliers: Supplier[] = [
   {
     supplierName: "ChemCore Solutions Inc.",
-    supplierId: "CCSI-910-S",
+    supplierId: "SUP-001",
     primaryContact: "Sarah Johnson (Sales Director)",
     phone: "+1 (555) 301-4567",
     email: "sjohnson@chemcoresolutions.com",
@@ -34,7 +34,7 @@ export const mockSuppliers: Supplier[] = [
   },
   {
     supplierName: "Global Polymers Ltd.",
-    supplierId: "GPL-445-S",
+    supplierId: "SUP-002",
     primaryContact: "Michael Chen (Account Manager)",
     phone: "+1 (555) 892-3341",
     email: "mchen@globalpolymers.com",

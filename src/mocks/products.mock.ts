@@ -20,7 +20,7 @@ export interface Product {
 export const mockProducts: Product[] = [
   {
     productName: "Advanced Polymer Resin (APR-200)",
-    productId: "APR-200-P-0421",
+    productId: "PROD-001",
     category: "Specialty Chemicals / Composites",
     unitOfMeasure: "Kilogram (KG)",
     standardCostPerKG: 18.5,
@@ -32,7 +32,7 @@ export const mockProducts: Product[] = [
   },
   {
     productName: "High-Performance Epoxy Resin (HPE-350)",
-    productId: "HPE-350-P-0522",
+    productId: "PROD-002",
     category: "Specialty Chemicals / Adhesives",
     unitOfMeasure: "Kilogram (KG)",
     standardCostPerKG: 22.75,

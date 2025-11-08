@@ -20,7 +20,7 @@ export interface Company {
 export const mockCompanies: Company[] = [
   {
     companyName: "Stellar Manufacturing Corp.",
-    companyId: "SMC-HQ-3001",
+    companyId: "COMP-001",
     division: "Advanced Materials Procurement",
     procurementAgent: "David Chen",
     agentId: "DC-88-PA",
@@ -33,7 +33,7 @@ export const mockCompanies: Company[] = [
   },
   {
     companyName: "Stellar Manufacturing Corp.",
-    companyId: "SMC-EU-3002",
+    companyId: "COMP-002",
     division: "European Materials Procurement",
     procurementAgent: "Emma Schmidt",
     agentId: "ES-92-PA",
