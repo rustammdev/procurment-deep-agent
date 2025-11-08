@@ -1,0 +1,9 @@
+{
+  "store": {
+    "ttl": {
+      "default_ttl": 1440,
+      "sweep_interval_minutes": 60,
+      "refresh_on_read": false
+    }
+  }
+}
