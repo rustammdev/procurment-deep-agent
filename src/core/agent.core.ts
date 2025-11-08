@@ -9,6 +9,7 @@ import { ContextSchema, ContextType } from "../types/context.schema";
 import { MAIN_LOOP_PROMPT } from "../prompts/main.loop";
 import { humanCentricChatSubagent } from "./subagents/human-centric-chat.subagent";
 import { documentSummarySubagent } from "./subagents/document-summary.subagent";
+import { negotiationSubagent } from "./subagents/negotiation.subagent";
 
 /**
  * Deep Procurement Agent Service
@@ -38,7 +39,11 @@ export class DeepProcurmentAgentService {
         createUpdateConversationStatusTool(() => {}),
       ],
       // Add subagents for specialized tasks
-      subagents: [humanCentricChatSubagent, documentSummarySubagent],
+      subagents: [
+        humanCentricChatSubagent,
+        documentSummarySubagent,
+        negotiationSubagent,
+      ],
       contextSchema: ContextSchema,
     });
   }

@@ -30,6 +30,13 @@ export interface CollectedInfo {
  */
 const HUMAN_CENTRIC_CHAT_SYSTEM_PROMPT = `You are the HumanCentricChat Agent.
 
+CONTEXT AWARENESS:
+You have access to the full conversation history. Use it to:
+- Remember what the customer has already mentioned
+- Avoid asking duplicate questions
+- Reference previous points naturally
+- Build on earlier discussions
+
 YOUR MISSION:
 Gather necessary information from customers through empathetic, human-like conversation.
 

@@ -11,6 +11,7 @@
 
 import { ChatOpenAI } from "@langchain/openai";
 import { readDocumentTool } from "../../tools/document_reader.tool";
+import { SubAgent } from "deepagents";
 
 /**
  * Document types that can be classified
@@ -103,7 +104,7 @@ IMPORTANT RULES:
  * Dictionary-based SubAgent for use with createDeepAgent.
  * Handles document analysis and summarization to keep main agent context clean.
  */
-export const documentSummarySubagent = {
+export const documentSummarySubagent: SubAgent = {
   name: "document-summary",
   description:
     "Analyzes and summarizes uploaded documents (PDF, contracts, RFQs, specifications). " +
