@@ -1,11 +1,12 @@
 import { createDeepAgent, StoreBackend } from "deepagents";
 import { ChatOpenAI } from "@langchain/openai";
 import { InMemoryStore } from "@langchain/langgraph";
-import { createGetProductInfoTool } from "../tools/product_info.tool";
-import { createGetSupplierInfoTool } from "../tools/supplier_info.tool";
-import { createGetCompanyInfoTool } from "../tools/company_info.tool";
+import { getProductInfo } from "../tools/product_info.tool";
+import { getSupplierInfo } from "../tools/supplier_info.tool";
+import { getCompanyInfo } from "../tools/company_info.tool";
 import { createUpdateConversationStatusTool } from "../tools/conversation_status.tool";
 import { TestSchema, ConversationStatus } from "../types/conversation.types";
+import { ContextSchema, ContextType } from "../types/context.schema";
 
 /**
  * Deep Procurement Agent Service
@@ -54,13 +55,14 @@ Track the conversation status and update it appropriately as the negotiation pro
       backend: (stateAndStore) => new StoreBackend(stateAndStore),
       systemPrompt,
       tools: [
-        createGetProductInfoTool(config.productId),
-        createGetSupplierInfoTool(config.supplierId),
-        createGetCompanyInfoTool(config.companyId),
+        getProductInfo,
+        getSupplierInfo,
+        getCompanyInfo,
         createUpdateConversationStatusTool((status, note) =>
           this.updateStatus(status, note)
         ),
       ],
+      contextSchema: ContextSchema,
     });
   }
 
@@ -90,9 +92,15 @@ Track the conversation status and update it appropriately as the negotiation pro
   async processQuery(query: string, threadId?: string) {
     const config = threadId ? { configurable: { thread_id: threadId } } : {};
 
+    const context: ContextType = {
+      productId: this.config.productId,
+      supplierId: this.config.supplierId,
+      companyId: this.config.companyId,
+    };
+
     const response = await this.deepAgent.invoke(
       { messages: [{ role: "user", content: query }] },
-      config
+      { ...config, context }
     );
 
     return response;
@@ -107,9 +115,15 @@ Track the conversation status and update it appropriately as the negotiation pro
   async streamQuery(query: string, threadId?: string) {
     const config = threadId ? { configurable: { thread_id: threadId } } : {};
 
+    const context: ContextType = {
+      productId: this.config.productId,
+      supplierId: this.config.supplierId,
+      companyId: this.config.companyId,
+    };
+
     const stream = await this.deepAgent.stream(
       { messages: [{ role: "user", content: query }] },
-      config
+      { ...config, context }
     );
 
     return stream;
