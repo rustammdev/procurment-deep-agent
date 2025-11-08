@@ -8,6 +8,7 @@ import { createUpdateConversationStatusTool } from "../tools/conversation_status
 import { ContextSchema, ContextType } from "../types/context.schema";
 import { MAIN_LOOP_PROMPT } from "../prompts/main.loop";
 import { humanCentricChatSubagent } from "./subagents/human-centric-chat.subagent";
+import { documentSummarySubagent } from "./subagents/document-summary.subagent";
 
 /**
  * Deep Procurement Agent Service
@@ -37,7 +38,7 @@ export class DeepProcurmentAgentService {
         createUpdateConversationStatusTool(() => {}),
       ],
       // Add subagents for specialized tasks
-      subagents: [humanCentricChatSubagent],
+      subagents: [humanCentricChatSubagent, documentSummarySubagent],
       contextSchema: ContextSchema,
     });
   }
@@ -54,11 +55,6 @@ export class DeepProcurmentAgentService {
 
   /**
    * Process a query and return the complete response
-   * @param query - User query string
-   * @param threadId - Thread ID for conversation persistence
-   * @param productId - Product ID for context
-   * @param supplierId - Supplier ID for context
-   * @param companyId - Company ID for context
    * @returns Agent response
    */
   async processQuery(
