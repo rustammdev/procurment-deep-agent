@@ -35,30 +35,24 @@ const mockCompany: Company = {
 };
 
 /**
- * Tool to retrieve internal company information
+ * Factory function to create company info tool with pre-configured company ID
+ * @param companyId - Company ID from test schema config
  */
-export const getCompanyInfo = tool(
-  async () => {
-    return JSON.stringify(mockCompany, null, 2);
-  },
-  {
-    name: "get_company_info",
-    description:
-      "Get internal company information including procurement agent details, budget, payment terms, and ERP system.",
-    schema: z.object({}),
-  }
-);
+export const createGetCompanyInfoTool = (companyId: string) => {
+  return tool(
+    async () => {
+      // Validate company ID matches
+      if (mockCompany.companyId !== companyId) {
+        return `Company ID: ${companyId} not found`;
+      }
 
-/**
- * Tool to get company budget information
- */
-export const getCompanyBudget = tool(
-  async () => {
-    return `Annual Materials Budget: $${mockCompany.annualBudget.toLocaleString()}`;
-  },
-  {
-    name: "get_company_budget",
-    description: "Get the annual materials procurement budget for the company",
-    schema: z.object({}),
-  }
-);
+      return JSON.stringify(mockCompany, null, 2);
+    },
+    {
+      name: "get_company_info",
+      description:
+        "Get internal company information including procurement agent details, budget, payment terms, and ERP system for the configured company.",
+      schema: z.object({}),
+    }
+  );
+};

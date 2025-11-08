@@ -38,80 +38,25 @@ const mockSuppliers: Supplier[] = [
 ];
 
 /**
- * Tool to retrieve supplier information by Supplier ID
+ * Factory function to create supplier info tool with pre-configured supplier ID
+ * @param supplierId - Supplier ID from test schema config
  */
-export const getSupplierInfo = tool(
-  async ({ supplierId }: { supplierId: string }) => {
-    const supplier = mockSuppliers.find((s) => s.supplierId === supplierId);
+export const createGetSupplierInfoTool = (supplierId: string) => {
+  return tool(
+    async () => {
+      const supplier = mockSuppliers.find((s) => s.supplierId === supplierId);
 
-    if (!supplier) {
-      return `Supplier ID: ${supplierId} not found`;
+      if (!supplier) {
+        return `Supplier ID: ${supplierId} not found`;
+      }
+
+      return JSON.stringify(supplier, null, 2);
+    },
+    {
+      name: "get_supplier_info",
+      description:
+        "Get detailed supplier information including contact details, certifications, payment terms, and product focus for the configured supplier.",
+      schema: z.object({}),
     }
-
-    return JSON.stringify(supplier, null, 2);
-  },
-  {
-    name: "get_supplier_info",
-    description:
-      "Get detailed supplier information including contact details, certifications, payment terms, and product focus by Supplier ID.",
-    schema: z.object({
-      supplierId: z.string().describe("Supplier ID number, e.g., CCSI-910-S"),
-    }),
-  }
-);
-
-/**
- * Tool to list all available suppliers
- */
-export const listAllSuppliers = tool(
-  async () => {
-    const supplierList = mockSuppliers.map((s) => ({
-      supplierId: s.supplierId,
-      supplierName: s.supplierName,
-      productFocus: s.productFocus,
-      certification: s.certification,
-    }));
-
-    return JSON.stringify(supplierList, null, 2);
-  },
-  {
-    name: "list_all_suppliers",
-    description: "List all available suppliers with their basic information",
-    schema: z.object({}),
-  }
-);
-
-/**
- * Tool to search suppliers by product focus
- */
-export const searchSuppliersByProduct = tool(
-  async ({ keyword }: { keyword: string }) => {
-    const results = mockSuppliers.filter((s) =>
-      s.productFocus.toLowerCase().includes(keyword.toLowerCase())
-    );
-
-    if (results.length === 0) {
-      return `No suppliers found for keyword: ${keyword}`;
-    }
-
-    return JSON.stringify(
-      results.map((s) => ({
-        supplierId: s.supplierId,
-        supplierName: s.supplierName,
-        productFocus: s.productFocus,
-      })),
-      null,
-      2
-    );
-  },
-  {
-    name: "search_suppliers_by_product",
-    description:
-      "Search suppliers by product keyword (e.g., 'chemical', 'polymer', 'resin')",
-    schema: z.object({
-      keyword: z
-        .string()
-        .describe("Keyword to search in supplier product focus"),
-    }),
-  }
-);
+  );
+};

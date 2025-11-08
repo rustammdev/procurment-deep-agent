@@ -30,45 +30,25 @@ const mockProducts: Product[] = [
 ];
 
 /**
- * Tool to retrieve detailed product information by Product ID
+ * Factory function to create product info tool with pre-configured product ID
+ * @param productId - Product ID from test schema config
  */
-export const getProductInfo = tool(
-  async ({ productId }: { productId: string }) => {
-    const product = mockProducts.find((p) => p.productId === productId);
+export const createGetProductInfoTool = (productId: string) => {
+  return tool(
+    async () => {
+      const product = mockProducts.find((p) => p.productId === productId);
 
-    if (!product) {
-      return `Product ID: ${productId} not found`;
+      if (!product) {
+        return `Product ID: ${productId} not found`;
+      }
+
+      return JSON.stringify(product, null, 2);
+    },
+    {
+      name: "get_product_info",
+      description:
+        "Get complete product information including price, raw material composition, manufacturing lead time, and storage requirements for the configured product.",
+      schema: z.object({}),
     }
-
-    return JSON.stringify(product, null, 2);
-  },
-  {
-    name: "get_product_info",
-    description:
-      "Get complete product information including price, raw material composition, manufacturing lead time, and storage requirements by Product ID.",
-    schema: z.object({
-      productId: z.string().describe("Product ID number, e.g., APR-200-P-0421"),
-    }),
-  }
-);
-
-/**
- * Tool to list all available products with basic information
- */
-export const listAllProducts = tool(
-  async () => {
-    const productList = mockProducts.map((p) => ({
-      productId: p.productId,
-      productName: p.productName,
-      category: p.category,
-      costPerKG: p.standardCostPerKG,
-    }));
-
-    return JSON.stringify(productList, null, 2);
-  },
-  {
-    name: "list_all_products",
-    description: "List all available products with their basic information",
-    schema: z.object({}),
-  }
-);
+  );
+};

@@ -1,13 +1,11 @@
 import { createDeepAgent, StoreBackend } from "deepagents";
 import { ChatOpenAI } from "@langchain/openai";
 import { InMemoryStore } from "@langchain/langgraph";
-import { getProductInfo, listAllProducts } from "../tools/product_info.tool";
-import {
-  getSupplierInfo,
-  listAllSuppliers,
-  searchSuppliersByProduct,
-} from "../tools/supplier_info.tool";
-import { getCompanyInfo, getCompanyBudget } from "../tools/company_info.tool";
+import { createGetProductInfoTool } from "../tools/product_info.tool";
+import { createGetSupplierInfoTool } from "../tools/supplier_info.tool";
+import { createGetCompanyInfoTool } from "../tools/company_info.tool";
+import { createUpdateConversationStatusTool } from "../tools/conversation_status.tool";
+import { TestSchema, ConversationStatus } from "../types/conversation.types";
 
 /**
  * Deep Procurement Agent Service
@@ -16,33 +14,36 @@ import { getCompanyInfo, getCompanyBudget } from "../tools/company_info.tool";
 export class DeepProcurmentAgentService {
   private deepAgent: any;
   private store: InMemoryStore;
-  private systemPrompt = `
+  private config: TestSchema;
+
+  constructor(config: TestSchema) {
+    this.config = config;
+    this.store = new InMemoryStore();
+
+    const systemPrompt = `
 You are an expert procurement agent for Stellar Manufacturing Corp.
 Your role is to assist with procurement decisions and provide information about:
 - Products: specifications, pricing, raw materials, lead times, and storage requirements
 - Suppliers: contact information, certifications, payment terms, and product focus
-- Company: internal procurement policies, budget, and ERP system
+- Company: internal procurement policies and ERP system
+
+Current Context:
+- Product ID: ${config.productId}
+- Supplier ID: ${config.supplierId}
+- Company ID: ${config.companyId}
+- Conversation Status: ${config.conversationStatus}
+${config.note ? `- Note: ${config.note}` : ""}
 
 Available tools:
-Product Tools:
-- get_product_info: Get detailed product information by Product ID
-- list_all_products: List all available products
-
-Supplier Tools:
-- get_supplier_info: Get detailed supplier information by Supplier ID
-- list_all_suppliers: List all available suppliers
-- search_suppliers_by_product: Search suppliers by product keyword
-
-Company Tools:
+- get_product_info: Get detailed product information for the configured product
+- get_supplier_info: Get detailed supplier information for the configured supplier
 - get_company_info: Get internal company information
-- get_company_budget: Get annual materials budget
+- update_conversation_status: Update the conversation status as negotiation progresses
 
 Always provide accurate, data-driven recommendations based on the available information.
 When comparing options, consider cost, lead time, certifications, and supplier reliability.
-  `.trim();
-
-  constructor() {
-    this.store = new InMemoryStore();
+Track the conversation status and update it appropriately as the negotiation progresses using the update_conversation_status tool.
+    `.trim();
 
     this.deepAgent = createDeepAgent({
       model: new ChatOpenAI({
@@ -51,20 +52,33 @@ When comparing options, consider cost, lead time, certifications, and supplier r
       }),
       store: this.store,
       backend: (stateAndStore) => new StoreBackend(stateAndStore),
-      systemPrompt: this.systemPrompt,
+      systemPrompt,
       tools: [
-        // Product tools
-        getProductInfo,
-        listAllProducts,
-        // Supplier tools
-        getSupplierInfo,
-        listAllSuppliers,
-        searchSuppliersByProduct,
-        // Company tools
-        getCompanyInfo,
-        getCompanyBudget,
+        createGetProductInfoTool(config.productId),
+        createGetSupplierInfoTool(config.supplierId),
+        createGetCompanyInfoTool(config.companyId),
+        createUpdateConversationStatusTool((status, note) =>
+          this.updateStatus(status, note)
+        ),
       ],
     });
+  }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): TestSchema {
+    return { ...this.config };
+  }
+
+  /**
+   * Update conversation status
+   */
+  updateStatus(status: ConversationStatus, note?: string) {
+    this.config.conversationStatus = status;
+    if (note) {
+      this.config.note = note;
+    }
   }
 
   /**
