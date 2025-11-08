@@ -7,6 +7,7 @@ import { getCompanyInfo } from "../tools/company_info.tool";
 import { createUpdateConversationStatusTool } from "../tools/conversation_status.tool";
 import { ContextSchema, ContextType } from "../types/context.schema";
 import { MAIN_LOOP_PROMPT } from "../prompts/main.loop";
+import { humanCentricChatSubagent } from "./subagents/human-centric-chat.subagent";
 
 /**
  * Deep Procurement Agent Service
@@ -35,6 +36,8 @@ export class DeepProcurmentAgentService {
         getCompanyInfo,
         createUpdateConversationStatusTool(() => {}),
       ],
+      // Add subagents for specialized tasks
+      subagents: [humanCentricChatSubagent],
       contextSchema: ContextSchema,
     });
   }
